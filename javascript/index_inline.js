@@ -1,0 +1,212 @@
+document.getElementById('copyrightYear').innerHTML = '&copy; ' + new Date().getFullYear() + ' TOKYO DRIFT. ALL RIGHTS RESERVED.';
+  
+function toggleMobileMenu() { 
+    var nav = document.querySelector('.compact-nav'); 
+    if(nav) nav.classList.toggle('show'); 
+}
+
+function goBack() { 
+    var bgAudio = document.getElementById('bgMusic');
+    if (bgAudio && !bgAudio.paused) {
+        sessionStorage.setItem('musicTime', bgAudio.currentTime);
+        sessionStorage.setItem('musicPlaying', 'true');
+    }
+    if (document.referrer && document.referrer !== "") { 
+        window.history.back(); 
+    } else { 
+        window.location.href = "index.html"; 
+    } 
+}
+
+function showNotification(msg) { 
+    var notif = document.getElementById('globalNotif'); 
+    if(!notif) { 
+        notif = document.createElement('div'); 
+        notif.id = 'globalNotif'; 
+        document.body.appendChild(notif); 
+    } 
+    notif.innerText = msg; 
+    notif.style.opacity = '1'; 
+    setTimeout(function() { 
+        notif.style.opacity = '0'; 
+    }, 3000); 
+}
+
+setTimeout(function() { 
+    var loader = document.getElementById("loader"); 
+    if(loader) { 
+        loader.style.opacity = "0"; 
+        setTimeout(function() { 
+            loader.style.display = "none"; 
+        }, 500); 
+    } 
+}, 3000);
+
+function updateNavigation() {
+    var nav = document.getElementById('mainNav');
+    if (!nav) return;
+    var isCustomer = localStorage.getItem('user') !== null;
+    var isAdmin = localStorage.getItem('admin') === 'true';
+    var isWorker = localStorage.getItem('worker') !== null;
+    
+    var navHtml = '<a href="index.html" class="active">HOME</a><a href="content/about.html">ABOUT</a><a href="content/products.html">CARS</a>';
+    
+    if (isCustomer) {
+        navHtml += '<a href="content/booking.html">BOOKING</a>';
+        navHtml += '<a href="content/user.html">MY ACCOUNT</a>';
+        navHtml += '<a href="#" onclick="logout(); return false;">LOGOUT</a>';
+    }
+    else if (isAdmin) {
+        navHtml += '<a href="content/admin.html">ADMIN</a>';
+        navHtml += '<a href="#" onclick="logout(); return false;">LOGOUT</a>';
+    }
+    else if (isWorker) {
+        navHtml += '<a href="content/worker.html">WORKER</a>';
+        navHtml += '<a href="#" onclick="logout(); return false;">LOGOUT</a>';
+    }
+    else {
+        navHtml += '<a href="content/booking.html">BOOKING</a>';
+        navHtml += '<a href="content/login.html">LOGIN</a>';
+        navHtml += '<a href="content/signup.html">SIGN UP</a>';
+    }
+    
+    navHtml += '<button id="themeBtn" type="button" onclick="toggleTheme()">🌙</button>';
+    nav.innerHTML = navHtml;
+}
+
+function updateHeroButtons() {
+    var heroButtons = document.getElementById('heroButtons');
+    if (!heroButtons) return;
+    
+    var isCustomer = localStorage.getItem('user') !== null;
+    var isAdmin = localStorage.getItem('admin') === 'true';
+    var isWorker = localStorage.getItem('worker') !== null;
+    
+    if (isCustomer) {
+        heroButtons.innerHTML = '<a href="content/products.html" class="btn">BROWSE CARS</a><a href="content/booking.html" class="btn btn-outline">BOOK TEST DRIVE</a>';
+    }
+    else if (isAdmin) {
+        heroButtons.innerHTML = '<a href="content/products.html" class="btn">BROWSE CARS</a><a href="content/admin.html" class="btn btn-outline">ADMIN DASHBOARD</a>';
+    }
+    else if (isWorker) {
+        heroButtons.innerHTML = '<a href="content/products.html" class="btn">BROWSE CARS</a><a href="content/worker.html" class="btn btn-outline">WORKER DASHBOARD</a>';
+    }
+    else {
+        heroButtons.innerHTML = '<a href="content/products.html" class="btn">BROWSE CARS</a><a href="content/booking.html" class="btn btn-outline">BOOK TEST DRIVE</a>';
+    }
+}
+
+function toggleTheme() { 
+    document.body.classList.toggle("light"); 
+    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark"); 
+    updateNavigation(); 
+    updateHeroButtons(); 
+}
+
+function loadTheme() { 
+    var theme = localStorage.getItem("theme"); 
+    if(theme === "light") document.body.classList.add("light"); 
+    updateNavigation(); 
+    updateHeroButtons(); 
+}
+
+function logout() { 
+    localStorage.removeItem("user"); 
+    localStorage.removeItem("admin"); 
+    localStorage.removeItem("worker"); 
+    showNotification("Logged out successfully!"); 
+    setTimeout(function() { 
+        window.location.href = "index.html"; 
+    }, 1000); 
+}
+
+loadTheme();
+window.toggleTheme = toggleTheme; 
+window.goBack = goBack; 
+window.logout = logout;
+window.updateHeroButtons = updateHeroButtons;
+window.toggleMobileMenu = toggleMobileMenu;
+
+var audio = document.getElementById('bgMusic');
+var playBtn = document.getElementById('musicPlayBtn');
+var prevBtn = document.getElementById('musicPrevBtn');
+var nextBtn = document.getElementById('musicNextBtn');
+var currentSongSpan = document.getElementById('currentSong');
+
+var playlist = [
+    { name: "Imagine Dragons - Natural", file: "music/Imagine-Dragons-Natural.mp3" },
+    { name: "Papa Roach - Born For Greatness", file: "music/Papa-Roach-Born-For-Greatness.mp3" },
+    { name: "The Score - Legend", file: "music/The-Score-Legend.mp3" }
+];
+var currentIndex = 0;
+
+function loadSong(index) {
+    if (!audio) return;
+    currentIndex = (index + playlist.length) % playlist.length;
+    audio.src = playlist[currentIndex].file;
+    audio.load();
+    if (currentSongSpan) currentSongSpan.textContent = playlist[currentIndex].name;
+}
+
+function playMusic() {
+    if (!audio) return;
+    audio.play().then(function() {
+        if (playBtn) playBtn.textContent = "🔊";
+    }).catch(function(e) {
+        console.log("Click on page to enable audio");
+        if (playBtn) playBtn.textContent = "🔈";
+    });
+}
+
+if (playBtn) {
+    playBtn.onclick = function() {
+        if (audio.paused) {
+            playMusic();
+        } else {
+            audio.pause();
+            playBtn.textContent = "🔈";
+        }
+    };
+}
+
+if (nextBtn) {
+    nextBtn.onclick = function() {
+        loadSong(currentIndex + 1);
+        if (!audio.paused) playMusic();
+    };
+}
+
+if (prevBtn) {
+    prevBtn.onclick = function() {
+        loadSong(currentIndex - 1);
+        if (!audio.paused) playMusic();
+    };
+}
+
+loadSong(0);
+if (audio) audio.volume = 0.3;
+
+var savedTime = sessionStorage.getItem('musicTime');
+var savedPlaying = sessionStorage.getItem('musicPlaying');
+
+if (savedTime && audio) {
+    audio.currentTime = parseFloat(savedTime);
+}
+
+if (savedPlaying === 'true' && audio && audio.paused) {
+    playMusic();
+}
+
+window.addEventListener('beforeunload', function() {
+    if (audio && !audio.paused) {
+        sessionStorage.setItem('musicTime', audio.currentTime);
+        sessionStorage.setItem('musicPlaying', 'true');
+    }
+});
+
+document.body.addEventListener('click', function firstClick() {
+    if (audio && audio.paused && !savedPlaying) {
+        playMusic();
+    }
+    document.body.removeEventListener('click', firstClick);
+});
