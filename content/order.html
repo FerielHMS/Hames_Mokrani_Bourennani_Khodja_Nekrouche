@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tokyo Drift - Complete Order</title>
+    <link rel="icon" type="image/png" href="../image/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&amp;family=Condiment&amp;family=Black+Ops+One&amp;family=Metal+Mania&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style/order_inline.css">
+</head>
+<body>
+
+<video autoplay loop muted playsinline class="video-background">
+    <source src="../video/background-vid.mp4" type="video/mp4">
+</video>
+<div class="video-overlay"></div>
+
+<audio id="bgMusic" preload="auto" autoplay></audio>
+<div class="music-player" id="musicPlayer">
+    <button id="musicPrevBtn" type="button">⏮</button>
+    <button id="musicPlayBtn" type="button">🔊</button>
+    <button id="musicNextBtn" type="button">⏭</button>
+    <div><span id="currentSong">Imagine Dragons - Natural</span></div>
+</div>
+
+<button class="back-btn" type="button" onclick="goBack()">← BACK</button>
+
+<div class="order-container">
+    <div class="order-card">
+        <h1 class="section-title">COMPLETE ORDER</h1>
+        
+        <div class="order-summary" id="orderSummary">Loading...</div>
+        
+        <form id="orderForm" onsubmit="return placeOrder(event)">
+            <div class="input-group">
+                <label>FULL NAME</label>
+                <input type="text" id="fullName" required>
+            </div>
+            <div class="input-group">
+                <label>EMAIL</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label>PHONE</label>
+                <input type="tel" id="phone" required>
+            </div>
+            <div class="input-group">
+                <label>ADDRESS</label>
+                <textarea id="address" rows="3" required></textarea>
+            </div>
+            <div class="input-group">
+                <label>PAYMENT METHOD</label>
+                <select id="paymentMethod" required>
+                    <option value="">SELECT</option>
+                    <option>Credit Card</option>
+                    <option>PayPal</option>
+                    <option>Bank Transfer</option>
+                </select>
+            </div>
+            <button type="submit" class="auth-btn">CONFIRM ORDER</button>
+        </form>
+    </div>
+</div>
+
+<footer class="site-footer"><div class="footer-bottom"><p id="copyrightYear"></p></div></footer>
+
+<script src="javascript/error_filter.js"></script>
+<script src="javascript/music.js"></script>
+<script src="../javascript/database.js"></script>
+<script src="../javascript/Script.js"></script>
+<script src="../javascript/order_inline.js"></script>
+</body>
+</html>

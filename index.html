@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Tokyo Drift - Luxury & Performance Cars</title>
+  <link rel="icon" type="image/png" href="image/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&amp;family=Condiment&amp;family=Black+Ops+One&amp;family=Metal+Mania&amp;family=Orbitron:wght@400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/index_inline.css">
+</head>
+<body>
+
+<div id="loader">
+  <video autoplay loop muted playsinline class="loader-video" id="loaderVideo">
+    <source src="video/loader-bg.mp4" type="video/mp4">
+    <source src="video/loader-bg.webm" type="video/webm">
+  </video>
+  <div class="loader-content">
+    <div class="wheel-spinner"></div>
+    <h1>TOKYO DRIFT</h1>
+    <p>Loading showroom...</p>
+  </div>
+</div>
+
+<video autoplay loop muted playsinline class="video-background">
+  <source src="video/background-vid.mp4" type="video/mp4">
+</video>
+<div class="video-overlay"></div>
+
+<audio id="bgMusic" preload="auto"></audio>
+<div class="music-player" id="musicPlayer">
+  <button id="musicPrevBtn" type="button">⏮</button>
+  <button id="musicPlayBtn" type="button">🔊</button>
+  <button id="musicNextBtn" type="button">⏭</button>
+  <div><span id="currentSong">Imagine Dragons - Natural</span></div>
+</div>
+
+<header class="compact-header">
+  <div class="header-top">
+    <div class="logo">
+      <img src="image/logo.png" alt="Tokyo Drift Logo" class="logo-icon">
+      <h1>TOKYO DRIFT</h1>
+    </div>
+    <button class="mobile-menu-btn" type="button" onclick="toggleMobileMenu()">☰</button>
+  </div>
+  <nav class="compact-nav" id="mainNav"></nav>
+</header>
+
+<section class="hero">
+  <h2>DRIFT THE FUTURE</h2>
+  <p>High-Performance and JDM Legends Marketplace</p>
+  <div class="hero-buttons" id="heroButtons"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-section"><h3>TOKYO DRIFT</h3><p>Drift your dreams with us.</p></div>
+    <div class="footer-section"><h4>LINKS</h4><a href="index.html">HOME</a><a href="content/products.html">CARS</a><a href="content/about.html">ABOUT</a><a href="content/booking.html">BOOKING</a></div>
+    <div class="footer-section"><h4>FOLLOW US</h4><div class="social-icons"><a href="#" class="social-icon" aria-label="Facebook"><img src="image/facebook.jpg" alt="Facebook"></a><a href="#" class="social-icon" aria-label="Twitter"><img src="image/twitter.jpg" alt="Twitter"></a><a href="#" class="social-icon" aria-label="Instagram"><img src="image/instagram.jpg" alt="Instagram"></a></div></div>
+    <div class="footer-section"><h4>NEWSLETTER</h4><p>Get exclusive offers and drift updates</p><div class="newsletter-form"><input type="email" placeholder="Your email"><button type="button">SUBSCRIBE</button></div></div>
+  </div>
+  <div class="footer-bottom"><p id="copyrightYear"></p></div>
+</footer>
+
+<script src="javascript/error_filter.js"></script>
+<script src="javascript/music.js"></script>
+<script src="javascript/database.js"></script>
+<script src="javascript/Script.js"></script>
+<script src="javascript/index_inline.js"></script>
+</body>
+</html>
