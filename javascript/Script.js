@@ -28,7 +28,7 @@ var isMusicPlaying = false;
     musicPlayer = document.getElementById("bgMusic");
     if (!musicPlayer) return;
 
-    var savedState = sessionStorage.getItem("musicState");
+    var savedState = localStorage.getItem("musicState");
     var savedTime = 0;
 
     if (savedState) {
@@ -87,7 +87,7 @@ function loadSong(index) {
 function saveMusicState() {
     if (!musicPlayer) return;
     var state = { currentSongIndex: currentSongIndex, isPlaying: isMusicPlaying, currentTime: musicPlayer.currentTime || 0 };
-    sessionStorage.setItem("musicState", JSON.stringify(state));
+   localStorage.setItem("musicState", JSON.stringify(state));
 }
 
 function toggleMusic() {
