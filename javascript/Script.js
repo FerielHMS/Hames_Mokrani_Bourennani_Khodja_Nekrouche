@@ -86,8 +86,16 @@ function loadSong(index) {
 
 function saveMusicState() {
     if (!musicPlayer) return;
-    var state = { currentSongIndex: currentSongIndex, isPlaying: isMusicPlaying, currentTime: musicPlayer.currentTime || 0 };
-   sessionStorage.setItem("musicState", JSON.stringify(state));
+
+    var state = {
+        currentSongIndex: currentSongIndex,
+        isPlaying: isMusicPlaying,
+        currentTime: musicPlayer.currentTime || 0
+    };
+
+    console.log("Saved state:", state);
+
+    localStorage.setItem("musicState", JSON.stringify(state));
 }
 
 function toggleMusic() {
