@@ -7,7 +7,7 @@ function goBack() {
         sessionStorage.setItem('musicPlaying', 'true');
     }
     if (document.referrer && document.referrer !== "") { 
-        window.history.back(); 
+        window.location.href = document.referrer;
     } else { 
         window.location.href = "login.html"; 
     } 
