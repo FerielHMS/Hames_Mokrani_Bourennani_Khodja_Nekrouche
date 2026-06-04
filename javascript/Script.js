@@ -30,19 +30,19 @@ function initMusicPlayer() {
     musicPlayer = document.getElementById("bgMusic");
     if (!musicPlayer) return;
 
-    var savedState = sessionStorage.getItem("musicState");
+    var saved = sessionStorage.getItem("musicState");
     var savedTime = 0;
     var shouldPlay = false;
 
-    if (savedState) {
-        var state = JSON.parse(savedState);
+    if (saved) {
+        var state = JSON.parse(saved);
+
         currentSongIndex = state.currentSongIndex || 0;
         savedTime = state.currentTime || 0;
-        shouldPlay = state.isPlaying === true;
+        shouldPlay = state.shouldPlay === true;
     }
 
     loadSong(currentSongIndex);
-
     musicPlayer.volume = 0.3;
 
     musicPlayer.addEventListener("loadedmetadata", function () {
@@ -51,28 +51,21 @@ function initMusicPlayer() {
             musicPlayer.currentTime = savedTime;
         }
 
-        if (shouldPlay) {
-            musicPlayer.play()
-                .then(function () {
-                    updatePlayButton();
-                })
-                .catch(function () {
-                    console.log("Autoplay blocked");
-                });
+        
+        if (shouldPlay === true) {
+            musicPlayer.play().catch(function () {
+                console.log("Autoplay blocked");
+            });
         }
+
+        updatePlayButton();
 
     }, { once: true });
 
-    musicPlayer.addEventListener("timeupdate", function () {
-        saveMusicState();
-    });
-
-    musicPlayer.addEventListener("ended", function () {
-        nextSong();
-    });
+    musicPlayer.addEventListener("timeupdate", saveMusicState);
+    musicPlayer.addEventListener("ended", nextSong);
 
     setupMusicButtons();
-    updatePlayButton();
 }
 
 
@@ -86,8 +79,8 @@ function loadSong(index) {
     musicPlayer.src = song.file;
     musicPlayer.load();
 
-    var songDisplay = document.getElementById("currentSong");
-    if (songDisplay) songDisplay.textContent = song.name;
+    var display = document.getElementById("currentSong");
+    if (display) display.textContent = song.name;
 
     saveMusicState();
 }
@@ -97,13 +90,11 @@ function loadSong(index) {
 function saveMusicState() {
     if (!musicPlayer) return;
 
-    var state = {
+    sessionStorage.setItem("musicState", JSON.stringify({
         currentSongIndex: currentSongIndex,
-        isPlaying: !musicPlayer.paused,
-        currentTime: musicPlayer.currentTime || 0
-    };
-
-    sessionStorage.setItem("musicState", JSON.stringify(state));
+        currentTime: musicPlayer.currentTime || 0,
+        shouldPlay: !musicPlayer.paused
+    }));
 }
 
 
@@ -119,7 +110,6 @@ function toggleMusic() {
             })
             .catch(function (e) {
                 console.log("Play blocked:", e);
-                enableMusicOnFirstClick();
             });
     } else {
         musicPlayer.pause();
@@ -131,9 +121,9 @@ function toggleMusic() {
 
 
 function updatePlayButton() {
-    var playBtn = document.getElementById("musicPlayBtn");
-    if (playBtn) {
-        playBtn.textContent = musicPlayer && !musicPlayer.paused ? "🔊" : "🔈";
+    var btn = document.getElementById("musicPlayBtn");
+    if (btn) {
+        btn.textContent = musicPlayer && !musicPlayer.paused ? "🔊" : "🔈";
     }
 }
 
@@ -146,9 +136,7 @@ function nextSong() {
     loadSong(currentSongIndex);
 
     if (!musicPlayer.paused) {
-        musicPlayer.play().catch(function () {
-            console.log("Play failed");
-        });
+        musicPlayer.play().catch(console.log);
     }
 
     saveMusicState();
@@ -157,37 +145,16 @@ function nextSong() {
 function previousSong() {
     if (!musicPlayer) return;
 
-    currentSongIndex = (currentSongIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+    currentSongIndex =
+        (currentSongIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+
     loadSong(currentSongIndex);
 
     if (!musicPlayer.paused) {
-        musicPlayer.play().catch(function () {
-            console.log("Play failed");
-        });
+        musicPlayer.play().catch(console.log);
     }
 
     saveMusicState();
-}
-
-
-
-function enableMusicOnFirstClick() {
-    function startMusic() {
-        if (musicPlayer && musicPlayer.paused) {
-            musicPlayer.play()
-                .then(function () {
-                    updatePlayButton();
-                    saveMusicState();
-                })
-                .catch(function () {});
-        }
-
-        document.removeEventListener("click", startMusic);
-        document.removeEventListener("keydown", startMusic);
-    }
-
-    document.addEventListener("click", startMusic);
-    document.addEventListener("keydown", startMusic);
 }
 
 
@@ -204,35 +171,4 @@ function setupMusicButtons() {
 
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    initMusicPlayer();
-});
-
-
-
-function loadCarsFromDB() {
-    if (window.db) {
-        window.db.getAllItems('cars')
-            .then(function (cars) {
-                window.carsDatabase = cars;
-                console.log("Cars loaded from IndexedDB:", cars.length);
-
-                if (window.renderCars) window.renderCars();
-            })
-            .catch(function (err) {
-                console.error("Error loading cars:", err);
-            });
-    }
-}
-
-window.refreshCarsDatabase = function () {
-    loadCarsFromDB();
-};
-
-if (window.db) {
-    loadCarsFromDB();
-} else {
-    window.addEventListener('databaseReady', function () {
-        loadCarsFromDB();
-    });
-}
+document.addEventListener("DOMContentLoaded", initMusicPlayer);
