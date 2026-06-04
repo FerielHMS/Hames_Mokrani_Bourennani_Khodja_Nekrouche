@@ -14,7 +14,7 @@ Année: 2025/2026
 MEMBRES DU GROUPE
 ================================================================================
 1. HAMES Feriel
-2. MOKRANE Sarah
+2. MOKRANI Sarah
 3. BOURENNANI Cerine
 4. KHODJA Lyes
 5. NEKROUCHE Amine
