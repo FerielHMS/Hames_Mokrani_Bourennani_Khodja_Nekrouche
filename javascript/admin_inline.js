@@ -21,7 +21,7 @@ function goBack() {
         sessionStorage.setItem('musicPlaying', 'true');
     }
     if (document.referrer && document.referrer !== "") { 
-        window.history.back(); 
+        window.location.href = document.referrer;
     } else { 
         window.location.href = "../index.html"; 
     } 
@@ -173,7 +173,7 @@ async function loadAdminData() {
     
     var workersList = document.getElementById("workersList");
     if (workers.length === 0) { 
-        workersList.innerHTML = '</table><td colspan="4">NO WORKERS YET<\/tr>'; 
+        workersList.innerHTML = '<tr><td colspan="4">NO WORKERS YET<\/tr>'; 
     } else { 
         var workersHtml = '';
         for (var i = 0; i < workers.length; i++) {
