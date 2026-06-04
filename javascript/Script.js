@@ -24,10 +24,9 @@ var musicPlayer = null;
 var currentSongIndex = 0;
 var isMusicPlaying = false;
 
- function initMusicPlayer() {
+function initMusicPlayer() {
     musicPlayer = document.getElementById("bgMusic");
     if (!musicPlayer) return;
-
     var savedState = sessionStorage.getItem("musicState");
     var savedTime = 0;
 
@@ -86,15 +85,8 @@ function loadSong(index) {
 
 function saveMusicState() {
     if (!musicPlayer) return;
-
-    var state = {
-    currentSongIndex: currentSongIndex,
-    isPlaying: isMusicPlaying
-};
-
-    console.log("Saved state:", state);
-
-    localStorage.setItem("musicState", JSON.stringify(state));
+    var state = { currentSongIndex: currentSongIndex, isPlaying: isMusicPlaying, currentTime: musicPlayer.currentTime || 0 };
+    sessionStorage.setItem("musicState", JSON.stringify(state));
 }
 
 function toggleMusic() {
