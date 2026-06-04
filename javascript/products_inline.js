@@ -1,5 +1,4 @@
 
-// ===================== YEAR (SAFE) =====================
 document.addEventListener("DOMContentLoaded", function () {
     var yearEl = document.getElementById('copyrightYear');
     if (yearEl) {
@@ -8,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ===================== UI HELPERS =====================
+
 function toggleMobileMenu() {
     var nav = document.querySelector('.compact-nav');
     if (nav) nav.classList.toggle('show');
@@ -31,7 +30,7 @@ function goBack() {
     }
 }
 
-// ===================== FORMATTERS =====================
+
 function formatPrice(price) {
     return "$" + price.toLocaleString();
 }
@@ -48,13 +47,13 @@ function getStockBadge(stock) {
 window.formatPrice = formatPrice;
 window.getStockBadge = getStockBadge;
 
-// ===================== STATE =====================
+
 var activeFilter = "All";
 var sortBy = "default";
 var carsData = [];
 var currentSelectedCar = null;
 
-// ===================== AUTH =====================
+
 function isAdmin() {
     return localStorage.getItem('admin') === 'true';
 }
@@ -67,7 +66,7 @@ function isAuthenticated() {
     );
 }
 
-// ===================== NOTIFICATIONS =====================
+
 function showNotification(msg) {
     var notif = document.getElementById('globalNotif');
 
@@ -85,7 +84,7 @@ function showNotification(msg) {
     }, 3000);
 }
 
-// ===================== NAVIGATION =====================
+
 function updateNavigation() {
     var nav = document.getElementById('mainNav');
     if (!nav) return;
@@ -119,7 +118,7 @@ function updateNavigation() {
     nav.innerHTML = navHtml;
 }
 
-// ===================== THEME =====================
+
 function toggleTheme() {
     document.body.classList.toggle("light");
     localStorage.setItem(
@@ -134,7 +133,7 @@ function loadTheme() {
     if (theme === "light") document.body.classList.add("light");
 }
 
-// ===================== LOGOUT =====================
+
 function logout() {
     localStorage.removeItem("user");
     localStorage.removeItem("admin");
@@ -147,7 +146,7 @@ function logout() {
     }, 1000);
 }
 
-// ===================== CAR LOGIC =====================
+
 function loadCarsFromDB() {
     if (window.db) {
         window.db.getAllItems('cars')
@@ -165,7 +164,7 @@ function loadCarsFromDB() {
     }
 }
 
-// ===================== RENDER =====================
+
 function renderCars() {
     var container = document.getElementById("carsContainer");
     if (!container) return;
@@ -226,7 +225,7 @@ function renderCars() {
     container.innerHTML = html;
 }
 
-// ===================== SAFE BOOT (IMPORTANT FIX) =====================
+
 function startProductsPage() {
     loadTheme();
     updateNavigation();
@@ -239,7 +238,7 @@ if (document.readyState === "loading") {
     startProductsPage();
 }
 
-// ===================== WINDOW EXPORTS =====================
+
 window.filterCars = function () {};
 window.searchCars = function () {};
 window.sortCars = function () {};
