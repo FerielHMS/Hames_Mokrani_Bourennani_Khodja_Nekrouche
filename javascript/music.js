@@ -1,89 +1,89 @@
-var basePath = window.location.pathname.includes('/content/') ? '../' : '';
+(function() {
+    var audio = document.getElementById('bgMusic');
+    var playBtn = document.getElementById('musicPlayBtn');
+    var prevBtn = document.getElementById('musicPrevBtn');
+    var nextBtn = document.getElementById('musicNextBtn');
+    var currentSongSpan = document.getElementById('currentSong');
 
-var audio = document.getElementById('bgMusic');
-var playBtn = document.getElementById('musicPlayBtn');
-var prevBtn = document.getElementById('musicPrevBtn');
-var nextBtn = document.getElementById('musicNextBtn');
-var currentSongSpan = document.getElementById('currentSong');
-
-var playlist = [
-    { name: "Imagine Dragons - Natural", file: basePath + "music/Imagine-Dragons-Natural.mp3" },
-    { name: "Papa Roach - Born For Greatness", file: basePath + "music/Papa-Roach-Born-For-Greatness.mp3" },
-    { name: "The Score - Legend", file: basePath + "music/The-Score-Legend.mp3" }
-];
-var currentIndex = 0;
-
-function loadSong(index) {
     if (!audio) return;
-    currentIndex = (index + playlist.length) % playlist.length;
-    audio.src = playlist[currentIndex].file;
-    audio.load();
-    if (currentSongSpan) currentSongSpan.textContent = playlist[currentIndex].name;
-}
 
-function playMusic() {
-    if (!audio) return;
-    audio.play().then(function() {
-        if (playBtn) playBtn.textContent = "🔊";
-    }).catch(function(e) {
-        console.log("Click on page to enable audio");
-        if (playBtn) playBtn.textContent = "🔈";
-    });
-}
+    var playlist = [
+        { name: "Imagine Dragons - Natural", file: "music/Imagine-Dragons-Natural.mp3" },
+        { name: "Papa Roach - Born For Greatness", file: "music/Papa-Roach-Born-For-Greatness.mp3" },
+        { name: "The Score - Legend", file: "music/The-Score-Legend.mp3" }
+    ];
+    var currentIndex = 0;
 
-if (playBtn) {
-    playBtn.onclick = function() {
-        if (audio.paused) {
+    function loadSong(index) {
+        currentIndex = (index + playlist.length) % playlist.length;
+        audio.src = playlist[currentIndex].file;
+        audio.load();
+        if (currentSongSpan) currentSongSpan.textContent = playlist[currentIndex].name;
+    }
+
+    function playMusic() {
+        audio.play().then(function() {
+            if (playBtn) playBtn.textContent = "🔊";
+        }).catch(function(e) {
+            console.log("Click on page to enable audio");
+            if (playBtn) playBtn.textContent = "🔈";
+        });
+    }
+
+    if (playBtn) {
+        playBtn.onclick = function() {
+            if (audio.paused) {
+                playMusic();
+            } else {
+                audio.pause();
+                playBtn.textContent = "🔈";
+            }
+        };
+    }
+
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            loadSong(currentIndex + 1);
+            if (!audio.paused) playMusic();
+        };
+    }
+
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            loadSong(currentIndex - 1);
+            if (!audio.paused) playMusic();
+        };
+    }
+
+    loadSong(0);
+    audio.volume = 0.3;
+
+    var savedTime = sessionStorage.getItem('musicTime');
+    var savedPlaying = sessionStorage.getItem('musicPlaying');
+
+    if (savedTime) {
+        audio.currentTime = parseFloat(savedTime);
+    }
+
+    if (savedPlaying === 'true') {
+        setTimeout(function() {
             playMusic();
+        }, 100);
+    }
+
+    window.addEventListener('beforeunload', function() {
+        if (!audio.paused) {
+            sessionStorage.setItem('musicTime', audio.currentTime);
+            sessionStorage.setItem('musicPlaying', 'true');
         } else {
-            audio.pause();
-            playBtn.textContent = "🔈";
+            sessionStorage.setItem('musicPlaying', 'false');
         }
-    };
-}
+    });
 
-if (nextBtn) {
-    nextBtn.onclick = function() {
-        loadSong(currentIndex + 1);
-        if (!audio.paused) playMusic();
-    };
-}
-
-if (prevBtn) {
-    prevBtn.onclick = function() {
-        loadSong(currentIndex - 1);
-        if (!audio.paused) playMusic();
-    };
-}
-
-loadSong(0);
-if (audio) audio.volume = 0.3;
-
-var savedTime = sessionStorage.getItem('musicTime');
-var savedPlaying = sessionStorage.getItem('musicPlaying');
-
-if (savedTime && audio) {
-    audio.currentTime = parseFloat(savedTime);
-}
-
-if (savedPlaying === 'true' && audio && audio.paused) {
-    playMusic();
-}
-
-function saveMusicState() {
-    if (audio && !audio.paused) {
-        sessionStorage.setItem('musicTime', audio.currentTime);
-        sessionStorage.setItem('musicPlaying', 'true');
-    }
-}
-
-window.addEventListener('beforeunload', function() {
-    saveMusicState();
-});
-
-document.body.addEventListener('click', function firstClick() {
-    if (audio && audio.paused && !savedPlaying) {
-        playMusic();
-    }
-    document.body.removeEventListener('click', firstClick);
-});
+    document.body.addEventListener('click', function firstClick() {
+        if (audio.paused && savedPlaying !== 'true') {
+            playMusic();
+        }
+        document.body.removeEventListener('click', firstClick);
+    });
+})();
