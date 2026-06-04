@@ -20,29 +20,25 @@ var PLAYLIST = [
         file: musicPath + "The-Score-Legend.mp3"
     }
 ];
-
 var musicPlayer = null;
 var currentSongIndex = 0;
-
-
+var isMusicPlaying = false;
 
 function initMusicPlayer() {
     musicPlayer = document.getElementById("bgMusic");
     if (!musicPlayer) return;
-
-    var saved = sessionStorage.getItem("musicState");
+    var savedState = sessionStorage.getItem("musicState");
     var savedTime = 0;
-    var shouldPlay = false;
 
-    if (saved) {
-        var state = JSON.parse(saved);
-
+    if (savedState) {
+        var state = JSON.parse(savedState);
         currentSongIndex = state.currentSongIndex || 0;
+        isMusicPlaying = state.isPlaying || false;
         savedTime = state.currentTime || 0;
-        shouldPlay = state.shouldPlay === true;
     }
 
     loadSong(currentSongIndex);
+
     musicPlayer.volume = 0.3;
 
     musicPlayer.addEventListener("loadedmetadata", function () {
@@ -51,124 +47,126 @@ function initMusicPlayer() {
             musicPlayer.currentTime = savedTime;
         }
 
-        
-        if (shouldPlay === true) {
-            musicPlayer.play().catch(function () {
-                console.log("Autoplay blocked");
-            });
+        if (isMusicPlaying) {
+            musicPlayer.play()
+                .then(function () {
+                    updatePlayButton();
+                })
+                .catch(function () {
+                    isMusicPlaying = false;
+                    updatePlayButton();
+                });
         }
-
-        updatePlayButton();
 
     }, { once: true });
 
-    musicPlayer.addEventListener("timeupdate", saveMusicState);
-    musicPlayer.addEventListener("ended", nextSong);
+    musicPlayer.addEventListener("timeupdate", function () {
+        saveMusicState();
+    });
+
+    musicPlayer.addEventListener("ended", function () {
+        nextSong();
+    });
 
     setupMusicButtons();
+    updatePlayButton();
 }
-
-
 
 function loadSong(index) {
     if (!musicPlayer) return;
-
     currentSongIndex = (index + PLAYLIST.length) % PLAYLIST.length;
-
     var song = PLAYLIST[currentSongIndex];
     musicPlayer.src = song.file;
     musicPlayer.load();
-
-    var display = document.getElementById("currentSong");
-    if (display) display.textContent = song.name;
-
+    var songDisplay = document.getElementById("currentSong");
+    if (songDisplay) songDisplay.textContent = song.name;
     saveMusicState();
 }
 
-
-
 function saveMusicState() {
     if (!musicPlayer) return;
-
-    sessionStorage.setItem("musicState", JSON.stringify({
-        currentSongIndex: currentSongIndex,
-        currentTime: musicPlayer.currentTime || 0,
-        shouldPlay: !musicPlayer.paused
-    }));
+    var state = { currentSongIndex: currentSongIndex, isPlaying: isMusicPlaying, currentTime: musicPlayer.currentTime || 0 };
+    sessionStorage.setItem("musicState", JSON.stringify(state));
 }
-
-
 
 function toggleMusic() {
     if (!musicPlayer) return;
-
-    if (musicPlayer.paused) {
-        musicPlayer.play()
-            .then(function () {
-                updatePlayButton();
-                saveMusicState();
-            })
-            .catch(function (e) {
-                console.log("Play blocked:", e);
-            });
-    } else {
+    if (isMusicPlaying) {
         musicPlayer.pause();
+        isMusicPlaying = false;
         updatePlayButton();
-        saveMusicState();
+    } else {
+        musicPlayer.play().then(function() { isMusicPlaying = true; updatePlayButton(); })["catch"](function(e) { enableMusicOnFirstClick(); });
     }
+    saveMusicState();
 }
-
-
 
 function updatePlayButton() {
-    var btn = document.getElementById("musicPlayBtn");
-    if (btn) {
-        btn.textContent = musicPlayer && !musicPlayer.paused ? "🔊" : "🔈";
-    }
+    var playBtn = document.getElementById("musicPlayBtn");
+    if (playBtn) playBtn.textContent = isMusicPlaying ? "🔊" : "🔈";
 }
-
-
 
 function nextSong() {
     if (!musicPlayer) return;
-
     currentSongIndex = (currentSongIndex + 1) % PLAYLIST.length;
     loadSong(currentSongIndex);
-
-    if (!musicPlayer.paused) {
-        musicPlayer.play().catch(console.log);
-    }
-
+    if (isMusicPlaying) musicPlayer.play()["catch"](function(e) { console.log("Play failed:"); });
     saveMusicState();
 }
 
 function previousSong() {
     if (!musicPlayer) return;
-
-    currentSongIndex =
-        (currentSongIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
-
+    currentSongIndex = (currentSongIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
     loadSong(currentSongIndex);
-
-    if (!musicPlayer.paused) {
-        musicPlayer.play().catch(console.log);
-    }
-
+    if (isMusicPlaying) musicPlayer.play()["catch"](function(e) { console.log("Play failed:"); });
     saveMusicState();
 }
 
-
+function enableMusicOnFirstClick() {
+    var startMusic = function() {
+        if (musicPlayer && !isMusicPlaying) {
+            musicPlayer.play().then(function() { isMusicPlaying = true; updatePlayButton(); saveMusicState(); })["catch"](function(e) { console.log("Play failed:"); });
+        }
+        document.removeEventListener("click", startMusic);
+        document.removeEventListener("keydown", startMusic);
+    };
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
+}
 
 function setupMusicButtons() {
     var prevBtn = document.getElementById("musicPrevBtn");
     var playBtn = document.getElementById("musicPlayBtn");
     var nextBtn = document.getElementById("musicNextBtn");
-
-    if (prevBtn) prevBtn.onclick = previousSong;
-    if (playBtn) playBtn.onclick = toggleMusic;
-    if (nextBtn) nextBtn.onclick = nextSong;
+    if (prevBtn) prevBtn.onclick = function() { previousSong(); };
+    if (playBtn) playBtn.onclick = function() { toggleMusic(); };
+    if (nextBtn) nextBtn.onclick = function() { nextSong(); };
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    initMusicPlayer();
+});
 
+function loadCarsFromDB() {
+    if (window.db) {
+        window.db.getAllItems('cars').then(function(cars) {
+            window.carsDatabase = cars;
+            console.log("Cars loaded from IndexedDB:", cars.length);
+            if (window.renderCars) window.renderCars();
+        }).catch(function(err) {
+            console.error("Error loading cars:", err);
+        });
+    }
+}
 
-document.addEventListener("DOMContentLoaded", initMusicPlayer);
+window.refreshCarsDatabase = function() {
+    loadCarsFromDB();
+};
+
+if (window.db) {
+    loadCarsFromDB();
+} else {
+    window.addEventListener('databaseReady', function() {
+        loadCarsFromDB();
+    });
+}
