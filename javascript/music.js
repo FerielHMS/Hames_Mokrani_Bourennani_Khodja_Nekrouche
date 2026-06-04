@@ -7,10 +7,15 @@
 
     if (!audio) return;
 
+    var path = '';
+    if (window.location.pathname.includes('/content/')) {
+        path = '../';
+    }
+
     var playlist = [
-        { name: "Imagine Dragons - Natural", file: "music/Imagine-Dragons-Natural.mp3" },
-        { name: "Papa Roach - Born For Greatness", file: "music/Papa-Roach-Born-For-Greatness.mp3" },
-        { name: "The Score - Legend", file: "music/The-Score-Legend.mp3" }
+        { name: "Imagine Dragons - Natural", file: path + "music/Imagine-Dragons-Natural.mp3" },
+        { name: "Papa Roach - Born For Greatness", file: path + "music/Papa-Roach-Born-For-Greatness.mp3" },
+        { name: "The Score - Legend", file: path + "music/The-Score-Legend.mp3" }
     ];
     var currentIndex = 0;
 
@@ -19,6 +24,7 @@
         audio.src = playlist[currentIndex].file;
         audio.load();
         if (currentSongSpan) currentSongSpan.textContent = playlist[currentIndex].name;
+        console.log("Loading song:", playlist[currentIndex].file);
     }
 
     function playMusic() {
