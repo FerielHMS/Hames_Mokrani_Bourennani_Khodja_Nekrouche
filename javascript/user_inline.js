@@ -14,7 +14,7 @@ function goBack() {
         sessionStorage.setItem('musicPlaying', 'true');
     }
     if (document.referrer && document.referrer !== "") { 
-        window.history.back(); 
+        window.location.href = document.referrer;
     } else { 
         window.location.href = "../index.html"; 
     } 
@@ -275,7 +275,7 @@ async function loadUserBookings() {
     
     var tbody = document.getElementById('userBookingsList');
     if (userBookings.length === 0) { 
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No bookings found. <a href="products.html">Book a test drive</a></td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No bookings found. <a href="products.html">Book a test drive</a><\/tr>'; 
         return; 
     }
     
